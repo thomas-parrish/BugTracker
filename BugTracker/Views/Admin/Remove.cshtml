@@ -1,0 +1,14 @@
+﻿
+@{
+    ViewBag.Title = "Remove";
+}
+
+<h2>Remove user from Role</h2>
+
+@using (@Html.BeginForm("Remove", null, FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    @Html.Hidden("Name", (string)ViewBag.Name)
+    @Html.ListBox("AssignedUsers")
+    <button type="submit">Submit</button>
+}

@@ -73,3 +73,7 @@ C:\Users\tparrish\Documents\BugTracker\BugTracker\bin\Microsoft.Owin.Security.Mi
 C:\Users\tparrish\Documents\BugTracker\BugTracker\obj\Debug\BugTracker.csprojResolveAssemblyReference.cache
 C:\Users\tparrish\Documents\BugTracker\BugTracker\obj\Debug\BugTracker.dll
 C:\Users\tparrish\Documents\BugTracker\BugTracker\obj\Debug\BugTracker.pdb
+C:\Users\tparrish\Documents\BugTracker\BugTracker\bin\Owin.Security.Providers.dll
+C:\Users\tparrish\Documents\BugTracker\BugTracker\bin\Octokit.dll
+C:\Users\tparrish\Documents\BugTracker\BugTracker\bin\Octokit.pdb
+C:\Users\tparrish\Documents\BugTracker\BugTracker\bin\Octokit.xml

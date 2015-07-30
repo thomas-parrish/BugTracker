@@ -1,0 +1,14 @@
+﻿@model IEnumerable<Microsoft.AspNet.Identity.EntityFramework.IdentityRole>
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Admin Index</h2>
+
+
+@foreach (var role in Model)
+{
+    <a href="@Url.Action("Add", new {role.Name})">Add Users to @role.Name role</a>
+    <a href="@Url.Action("Remove", new {role.Name})">Remove Users from @role.Name role</a>
+    <br/>
+}

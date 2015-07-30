@@ -7,6 +7,8 @@ using Microsoft.Owin.Security.Google;
 using Owin.Security.Providers.GitHub;
 using Owin;
 using System.Configuration;
+using System.Security.Claims;
+using System.Threading.Tasks;
 using BugTracker.Models;
 
 namespace BugTracker
@@ -69,7 +71,16 @@ namespace BugTracker
             var gitHubConfig = new GitHubAuthenticationOptions()
             {
                 ClientId = ConfigurationManager.AppSettings["GithubId"],
-                ClientSecret = ConfigurationManager.AppSettings["GithubSecret"]
+                ClientSecret = ConfigurationManager.AppSettings["GithubSecret"],
+                Provider = new GitHubAuthenticationProvider()
+                {
+                    OnAuthenticated = (context) =>
+                    {
+                        context.Identity.AddClaim(new Claim("urn:github:avatar_url", (string)context.User.GetValue("avatar_url")));
+                        context.Identity.AddClaim(new Claim("urn:github:access_token", context.AccessToken));
+                        return Task.FromResult(0);
+                    }
+                }
             };
 
             app.UseGitHubAuthentication(gitHubConfig);
