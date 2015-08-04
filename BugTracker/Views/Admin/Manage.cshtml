@@ -1,0 +1,37 @@
+﻿
+@{
+    ViewBag.Title = "Manage";
+}
+
+@section css {
+    <link href="~/Content/multi-select.css" rel="stylesheet" />
+}
+
+<h2>Add/Remove Users</h2>
+
+<div class="row">
+    <div class="col-md-12">
+        @using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
+            @Html.ListBox("AssignedUsers")
+            <br />
+            <button type="submit" class="btn btn-warning">Submit</button>
+        }
+    </div>
+</div>
+
+
+@section scripts {
+    <script src="~/Scripts/jquery.multi-select.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            $('select').multiSelect({
+                selectableHeader: "Users Not in Role",
+                selectionHeader: "Users in Role"
+            });
+
+        })
+    </script>
+}

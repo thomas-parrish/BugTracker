@@ -17,7 +17,9 @@
     <link href="/Content/app.min.1.css" rel="stylesheet">
     <link href="/Content/app.min.2.css" rel="stylesheet">
     <link href="~/Content/font-awesome.min.css" rel="stylesheet" />
+    <link href="~/Content/custom.css" rel="stylesheet"/>
 
+    @RenderSection("css",false)
 </head>
 
 <body>
@@ -31,8 +33,8 @@
                 </div>
             </li>
 
-            <li class="logo hidden-xs">
-                <a href="index.html"><i class="fa fa-bug"></i>&nbsp; dePested</a>
+            <li class="logo hidden-xs" style="display: inline-block;">
+                <a href="/"><i class="fa fa-bug"></i>&nbsp; dePested</a>
             </li>
 
             <li class="pull-right">

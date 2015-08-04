@@ -14,70 +14,59 @@ using Microsoft.AspNet.Identity.Owin;
 
 namespace BugTracker.Controllers
 {
+    [RoutePrefix("Admin")]
     [Authorize(Roles = "Admin")]
     public class AdminController : Controller
     {
-        private ApplicationDbContext Db = new ApplicationDbContext();
+        private ApplicationDbContext _db = new ApplicationDbContext();
 
         // GET: Admin
         public ActionResult Index()
         {   
-            return View(Db.Roles.ToList());
+            return View(_db.Roles.ToList());
         }
 
-        public ActionResult Add(string name)
+        [Route("Manage/{name}s")]
+        public ActionResult Manage(string name)
         {
             if(string.IsNullOrWhiteSpace(name))
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-            ViewBag.AssignedUsers = new MultiSelectList(Db.UsersNotInRole(name), "Id", "UserName");
+            ViewBag.AssignedUsers = new MultiSelectList(_db.Users, "Id", "UserName", 
+                                        _db.UsersInRole(name).Select(u => u.Id));
             ViewBag.Name = name;
             return View();
         }
 
+        [Route("Manage/{name}s")]
         [ValidateAntiForgeryToken]
         [HttpPost]
-        public ActionResult Add(string name, string[] AssignedUsers)
+        public ActionResult Manage(string name, string[] assignedUsers)
         {
             var manager = HttpContext.GetOwinContext().Get<ApplicationUserManager>();
-            foreach (var userId in AssignedUsers)
+
+            assignedUsers = assignedUsers ?? new string[0];
+
+            var role = _db.Roles.FirstOrDefault(r => r.Name == name);
+
+            if(role == null)
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
+            role.Users.Clear();
+            foreach (var userId in assignedUsers)
             {
                 manager.AddToRole(userId, name);
             }
 
-            return RedirectToAction("Index");
+            return RedirectToAction("Manage", new {name});
         }
-
-        public ActionResult Remove(string name)
-        {
-            if (string.IsNullOrWhiteSpace(name))
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-
-            ViewBag.AssignedUsers = new MultiSelectList(Db.UsersInRole(name), "Id", "UserName");
-            ViewBag.Name = name;
-            return View();
-        }
-
-        [ValidateAntiForgeryToken]
-        [HttpPost]
-        public ActionResult Remove(string name, string[] AssignedUsers)
-        {
-            var manager = HttpContext.GetOwinContext().Get<ApplicationUserManager>();
-            foreach (var userId in AssignedUsers)
-            {
-                manager.RemoveFromRole(userId, name);
-            }
-
-            return RedirectToAction("Index");
-        }
-
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing && Db != null)
+            if (disposing && _db != null)
             {
-                Db.Dispose();
-                Db = null;
+                _db.Dispose();
+                _db = null;
             }
 
             base.Dispose(disposing);
