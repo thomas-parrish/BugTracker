@@ -77,3 +77,6 @@ C:\Users\tparrish\Documents\BugTracker\BugTracker\bin\Owin.Security.Providers.dl
 C:\Users\tparrish\Documents\BugTracker\BugTracker\bin\Octokit.dll
 C:\Users\tparrish\Documents\BugTracker\BugTracker\bin\Octokit.pdb
 C:\Users\tparrish\Documents\BugTracker\BugTracker\bin\Octokit.xml
+C:\Users\tparrish\Documents\BugTracker\BugTracker\bin\ExpressionFusion.dll
+C:\Users\tparrish\Documents\BugTracker\BugTracker\bin\OrganizationalIdentity.dll
+C:\Users\tparrish\Documents\BugTracker\BugTracker\bin\OrganizationalIdentity.pdb

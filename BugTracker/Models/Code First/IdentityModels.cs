@@ -1,9 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data.Entity;
+using System.Runtime.Serialization;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
+using Microsoft.Owin.Security;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using OrganizationalIdentity.Models;
 
 namespace BugTracker.Models
 {
@@ -17,8 +23,10 @@ namespace BugTracker.Models
             // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType
             var userIdentity = await manager.CreateIdentityAsync(this, DefaultAuthenticationTypes.ApplicationCookie);
             // Add custom user claims here
+            if(!userIdentity.HasClaim(c=>c.Type == "Testing"))
+                userIdentity.AddClaim(new JsonClaim("Test", new ApplicationUser() {UserName = "Fake", Email = "Fake@Email.com"}).Claim);
             return userIdentity;
-        }
+        } 
     }
 
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
@@ -41,5 +49,7 @@ namespace BugTracker.Models
         public DbSet<TicketStatus> TicketStatuses { get; set; }
         public DbSet<Project> Projects { get; set; }
         public DbSet<Team> Teams { get; set; }
+        public DbSet<TeamInvite> TeamInvitations { get; set; }
+        public DbSet<UserTeamRole> UserTeamRoles { get; set; }
     }
 }

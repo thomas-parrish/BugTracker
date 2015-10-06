@@ -116,11 +116,15 @@
       selectableLi
         .data('ms-value', value)
         .addClass('ms-elem-selectable')
+        .addClass('animated-fast ')
+        .addClass('fadeInRight')
         .attr('id', elementId+'-selectable');
 
       selectedLi
         .data('ms-value', value)
         .addClass('ms-elem-selection')
+        .addClass('animated-fast ')
+        .addClass('fadeInLeft')
         .attr('id', elementId+'-selection')
         .hide();
 

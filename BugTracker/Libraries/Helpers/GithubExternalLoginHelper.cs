@@ -17,7 +17,7 @@ namespace BugTracker.Libraries.Helpers
 {
     public static class GithubHelpers
     {
-        public static async Task<IdentityResult> CreateUserFromIdentityAsync(this ApplicationUserManager manager, ExternalLoginInfo externalLogin)
+        public static async Task<ApplicationUser> CreateUserFromIdentityAsync(this ApplicationUserManager manager, ExternalLoginInfo externalLogin)
         {
             var user = new ApplicationUser
             {
@@ -28,12 +28,14 @@ namespace BugTracker.Libraries.Helpers
             foreach(var claim in externalLogin.ExternalIdentity.Claims.Where(c=>c.Type.StartsWith("urn:github:")))
                 user.Claims.Add(new IdentityUserClaim() {ClaimType = claim.Type, ClaimValue = claim.Value, UserId = user.Id});
 
-            return await manager.CreateAsync(user);
+            var result = await manager.CreateAsync(user);
+            return result.Succeeded ? user : null;
         }
 
         public static async Task UpdateClaimsFromExternalIdentityAsync(this ApplicationUserManager manager, ApplicationUser user, ExternalLoginInfo externalLogin)
         {
             foreach (var claim in user.Claims
+                                    .Where(c=> c.ClaimType.StartsWith("urn:github"))
                                     .Select(c => new Claim(c.ClaimType, c.ClaimValue))
                                     .ToList())
             {

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
+using System.Web.Caching;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
@@ -38,6 +39,7 @@ namespace BugTracker
         public ApplicationUserManager(IUserStore<ApplicationUser> store)
             : base(store)
         {
+            
         }
 
         public static ApplicationUserManager Create(IdentityFactoryOptions<ApplicationUserManager> options, IOwinContext context) 
@@ -85,6 +87,71 @@ namespace BugTracker
                     new DataProtectorTokenProvider<ApplicationUser>(dataProtectionProvider.Create("ASP.NET Identity"));
             }
             return manager;
+        }
+
+        public override async Task<IdentityResult> AddClaimAsync(string userId, Claim claim)
+        {
+            var result = await base.AddClaimAsync(userId, claim);
+
+            if (result == IdentityResult.Success)
+                TriggerRegenerateIdentity(userId);
+            return result;
+        }
+
+        public override async Task<IdentityResult> AddToRoleAsync(string userId, string role)
+        {
+            var result = await base.AddToRoleAsync(userId, role);
+            if (result == IdentityResult.Success)
+                TriggerRegenerateIdentity(userId);
+            return result;
+        }
+
+        public override async Task<IdentityResult> AddToRolesAsync(string userId, params string[] roles)
+        {
+            var result = await base.AddToRolesAsync(userId, roles);
+            if (result == IdentityResult.Success)
+                TriggerRegenerateIdentity(userId);
+            return result;
+        }
+
+        public override async Task<IdentityResult> RemoveClaimAsync(string userId, Claim claim)
+        {
+            var result = await base.RemoveClaimAsync(userId, claim);
+            if (result == IdentityResult.Success)
+                TriggerRegenerateIdentity(userId);
+            return result;
+        }
+
+        public override async Task<IdentityResult> RemoveFromRoleAsync(string userId, string role)
+        {
+            var result = await base.RemoveFromRoleAsync(userId, role);
+            if (result == IdentityResult.Success)
+                TriggerRegenerateIdentity(userId);
+            return result;
+        }
+
+        public override async Task<IdentityResult> RemoveFromRolesAsync(string userId, params string[] roles)
+        {
+            var result = await base.RemoveFromRolesAsync(userId, roles);
+            if (result == IdentityResult.Success) 
+                TriggerRegenerateIdentity(userId);
+            return result;
+        }
+
+
+        public bool TriggerRegenerateIdentity(string userId)
+        {
+            var user = Users.FirstOrDefault(u => u.Id == userId);
+            if (user == null) return false;
+
+            HttpRuntime.Cache.Add(user.UserName,
+                1,
+                null,
+                Cache.NoAbsoluteExpiration,
+                Cache.NoSlidingExpiration,
+                CacheItemPriority.High,
+                null);
+            return true;
         }
     }
 

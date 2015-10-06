@@ -5,6 +5,15 @@ VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BugTracker", "BugTracker\BugTracker.csproj", "{3A411753-D1F0-43E9-86B0-87393DB01C21}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1BACD2A4-9EB8-4ED1-9120-719D726A04C3}"
+	ProjectSection(SolutionItems) = preProject
+		global.json = global.json
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrganizationalIdentity", "OrganizationalIdentity\OrganizationalIdentity.csproj", "{2A3B6130-892F-40D2-9162-C5AF84C8AF63}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserRoleTester", "UserRoleTester\UserRoleTester.csproj", "{BF46B8A3-2A19-4F22-886C-1E1DF7D7E4A1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +24,14 @@ Global
 		{3A411753-D1F0-43E9-86B0-87393DB01C21}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3A411753-D1F0-43E9-86B0-87393DB01C21}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3A411753-D1F0-43E9-86B0-87393DB01C21}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2A3B6130-892F-40D2-9162-C5AF84C8AF63}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A3B6130-892F-40D2-9162-C5AF84C8AF63}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A3B6130-892F-40D2-9162-C5AF84C8AF63}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A3B6130-892F-40D2-9162-C5AF84C8AF63}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BF46B8A3-2A19-4F22-886C-1E1DF7D7E4A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF46B8A3-2A19-4F22-886C-1E1DF7D7E4A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF46B8A3-2A19-4F22-886C-1E1DF7D7E4A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF46B8A3-2A19-4F22-886C-1E1DF7D7E4A1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

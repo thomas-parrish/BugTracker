@@ -36,6 +36,7 @@ namespace BugTracker.Migrations
             {
                 roleManager.Create(role);
             }
+
         }
     }
 }

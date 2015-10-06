@@ -1,21 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
-using Owin;
-using Microsoft.Owin;
 using BugTracker.Models;
-using BugTracker.Models.Extensions;
 using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
 
 namespace BugTracker.Controllers
 {
     [RoutePrefix("Admin")]
-    [Authorize(Roles = "Admin")]
+    [Authorize]
     public class AdminController : Controller
     {
         private ApplicationDbContext _db = new ApplicationDbContext();
@@ -41,23 +36,19 @@ namespace BugTracker.Controllers
         [Route("Manage/{name}s")]
         [ValidateAntiForgeryToken]
         [HttpPost]
-        public ActionResult Manage(string name, string[] assignedUsers)
+        public async Task<ActionResult> Manage(string name, string[] assignedUsers)
         {
             var manager = HttpContext.GetOwinContext().Get<ApplicationUserManager>();
-
             assignedUsers = assignedUsers ?? new string[0];
 
-            var role = _db.Roles.FirstOrDefault(r => r.Name == name);
-
-            if(role == null)
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-
-            role.Users.Clear();
+            foreach (var user in _db.Users.Where(u => !assignedUsers.Contains(u.Id)))
+            {
+                await manager.RemoveFromRoleAsync(user.Id, name);
+            }
             foreach (var userId in assignedUsers)
             {
-                manager.AddToRole(userId, name);
+                await manager.AddToRoleAsync(userId, name);
             }
-
             return RedirectToAction("Manage", new {name});
         }
 
