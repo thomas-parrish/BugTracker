@@ -9,6 +9,11 @@ namespace OrganizationalIdentity.UserManager
 {
     public class OrganizationUser : IdentityUser<string, IdentityUserLogin, OrganizationUserRole, IdentityUserClaim>
     {
+        public OrganizationUser() : base()
+        {
+            Id = Guid.NewGuid().ToString();
+        }
+
         public override ICollection<OrganizationUserRole> Roles { get; } 
         public virtual ICollection<Organization> Organizations { get; } 
     }
