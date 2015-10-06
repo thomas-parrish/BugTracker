@@ -10,7 +10,7 @@ using Microsoft.AspNet.Identity.EntityFramework;
 namespace OrganizationalIdentity.UserManager
 {
     public class OrganizationUserStore<TUser> :
-        UserStore<TUser, IdentityRole<string, OrganizationUserRole>, string, IdentityUserLogin, OrganizationUserRole, IdentityUserClaim>,
+        UserStore<TUser, OrganizationRole, string, IdentityUserLogin, OrganizationUserRole, IdentityUserClaim>,
         IUserStore<TUser> where TUser : OrganizationUser
     {
         public OrganizationUserStore(DbContext context) : base(context)

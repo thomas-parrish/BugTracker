@@ -19,7 +19,7 @@ namespace UserRoleTester.Models
         }
     }
 
-    public class ApplicationDbContext : OrganizationDbContext
+    public class ApplicationDbContext : OrganizationDbContext<ApplicationUser>
     {
         public ApplicationDbContext()
             : base("DefaultConnection")

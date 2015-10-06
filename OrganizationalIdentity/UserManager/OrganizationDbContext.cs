@@ -12,10 +12,10 @@ using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace OrganizationalIdentity.UserManager
 {
-    public class OrganizationDbContext :
+    public class OrganizationDbContext<TUser> :
         IdentityDbContext
-            <OrganizationUser, OrganizationRole, string, IdentityUserLogin,
-                OrganizationUserRole, IdentityUserClaim>
+            <TUser, OrganizationRole, string, IdentityUserLogin,
+                OrganizationUserRole, IdentityUserClaim> where TUser: OrganizationUser
     {
         public OrganizationDbContext() : base()
         {
@@ -102,6 +102,6 @@ namespace OrganizationalIdentity.UserManager
         }
 
         public IDbSet<OrganizationUserRole> UserRoles { get; set; }
-        public IDbSet<Organization> Organizations { get; set; } 
+        public IDbSet<Organization> Organizations { get; set; }  
     }
 }
