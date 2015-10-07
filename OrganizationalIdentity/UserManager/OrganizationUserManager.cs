@@ -31,7 +31,7 @@ namespace OrganizationalIdentity.UserManager
 
     public class OrganizationUserManager<TUser> : UserManager<TUser,string> where TUser: OrganizationUser
     {
-        public OrganizationUserManager(IUserStore<TUser, string> store)
+        public OrganizationUserManager(OrganizationUserStore<TUser> store)
             : base(store)
         {
 
@@ -52,6 +52,21 @@ namespace OrganizationalIdentity.UserManager
                 TriggerRegenerateIdentity(userId);
             return result;
         }
+        public async Task<IdentityResult> AddToRoleAsync(TUser user, string organizationId, string role)
+        {
+            var orgStore = Store as OrganizationUserStore<TUser>;
+            if(orgStore == null)
+                throw new InvalidCastException("Cannot convert UserStore to OrganizationUserStore");
+
+            await orgStore.AddToRoleAsync(user, organizationId, role);
+            TriggerRegenerateIdentity(user.Id);
+            return IdentityResult.Success;
+        }
+
+        public void AddToRole(TUser user, string organizationId, string roleName)
+        {
+            AsyncHelper.RunSync(() => AddToRoleAsync(user, organizationId, roleName));
+        }
 
         public override async Task<IdentityResult> AddToRolesAsync(string userId, params string[] roles)
         {
@@ -60,6 +75,7 @@ namespace OrganizationalIdentity.UserManager
                 TriggerRegenerateIdentity(userId);
             return result;
         }
+        
 
         public override async Task<IdentityResult> RemoveClaimAsync(string userId, Claim claim)
         {

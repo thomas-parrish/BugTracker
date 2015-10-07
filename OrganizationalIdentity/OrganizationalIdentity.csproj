@@ -87,6 +87,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Models\JsonClaim.cs" />
+    <Compile Include="UserManager\AsyncHelper.cs" />
     <Compile Include="UserManager\Organization.cs" />
     <Compile Include="UserManager\OrganizationDbContext.cs" />
     <Compile Include="UserManager\OrganizationRole.cs" />

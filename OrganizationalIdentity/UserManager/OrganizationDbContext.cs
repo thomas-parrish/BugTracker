@@ -77,12 +77,27 @@ namespace OrganizationalIdentity.UserManager
             // CONSIDER: u.Email is Required if set on options?
             user.Property(u => u.Email).HasMaxLength(256);
 
-            modelBuilder.Entity<IdentityUserRole>().HasKey(k=>k.RoleId);
-
-            modelBuilder.Entity<OrganizationUserRole>()
-                .HasKey(r=> new {r.RoleId, r.UserId, r.OrganizationId})
-                .ToTable("AspNetOrganizationUserRoles");
-
+            var ourModel = modelBuilder.Entity<OrganizationUserRole>();
+            ourModel
+                .ToTable("AspNetOrganizationUserRoles")
+                .HasKey(r => r.Id);
+            ourModel
+                .HasOptional(m => m.Organization)
+                .WithMany()
+                .HasForeignKey(k => k.OrganizationId);
+            ourModel
+                .Property(u=>u.UserId)
+                .HasColumnAnnotation("Index",
+                    new IndexAnnotation(new IndexAttribute("IX_Unique_AspNetOrganizationUserRoles") { IsUnique = true, Order = 0}));
+            ourModel
+                .Property(u => u.RoleId)
+                .HasColumnAnnotation("Index",
+                    new IndexAnnotation(new IndexAttribute("IX_Unique_AspNetOrganizationUserRoles") { IsUnique = true, Order = 1 }));
+            ourModel
+                .Property(u => u.OrganizationId)
+                .HasColumnAnnotation("Index",
+                    new IndexAnnotation(new IndexAttribute("IX_Unique_AspNetOrganizationUserRoles") { IsUnique = true, Order = 2 }));
+            
             modelBuilder.Entity<IdentityUserLogin>()
                 .HasKey(l => new { l.LoginProvider, l.ProviderKey, l.UserId })
                 .ToTable("AspNetUserLogins");
@@ -98,7 +113,7 @@ namespace OrganizationalIdentity.UserManager
                 .IsRequired()
                 .HasMaxLength(256)
                 .HasColumnAnnotation("Index", new IndexAnnotation(new IndexAttribute("RoleNameIndex") { IsUnique = true }));
-            role.HasMany(r => r.Users).WithRequired().HasForeignKey(ur => ur.UserId);
+            role.HasMany(r => r.Users).WithRequired().HasForeignKey(ur => ur.RoleId);
         }
 
         public IDbSet<OrganizationUserRole> UserRoles { get; set; }

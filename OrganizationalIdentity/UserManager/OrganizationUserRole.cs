@@ -12,9 +12,11 @@ namespace OrganizationalIdentity.UserManager
 {
     public class OrganizationUserRole : IdentityUserRole<string>
     {
+        public int Id { get; set; }
         public string OrganizationId { get; set; }
 
-        public virtual IdentityRole Role { get; set; }
+        public virtual OrganizationUser User { get; set; }
+        public virtual OrganizationRole Role { get; set; }
         public virtual Organization Organization { get; set; }
     }
 }

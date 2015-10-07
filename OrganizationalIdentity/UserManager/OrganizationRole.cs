@@ -9,10 +9,14 @@ namespace OrganizationalIdentity.UserManager
 {
     public class OrganizationRole : IdentityRole<string, OrganizationUserRole>
     {
-        public OrganizationRole() : base()
+        public OrganizationRole() 
         {
+            Id = Guid.NewGuid().ToString();
         }
 
-        public string Tickle { get; set; }
+        public OrganizationRole(string roleName) : this()
+        {
+            Name = roleName;
+        }
     }
 }

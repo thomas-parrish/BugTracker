@@ -18,7 +18,9 @@ namespace OrganizationalIdentity.UserManager
         
         public Organization()
         {
-            this.Id = Guid.NewGuid().ToString();
+            Id = Guid.NewGuid().ToString();
+            Users = new HashSet<OrganizationUser>();
+            Roles = new HashSet<OrganizationUserRole>();
         }
 
     }
