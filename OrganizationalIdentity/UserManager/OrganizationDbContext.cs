@@ -47,7 +47,7 @@ namespace OrganizationalIdentity.UserManager
             <TUser, OrganizationRole<TKey>, TKey, IdentityUserLogin<TKey>,
                 OrganizationUserRole<TKey>, IdentityUserClaim<TKey>> 
         where TUser: OrganizationUser<TKey>
-        where TKey : struct, IEquatable<TKey>
+        where TKey : IEquatable<TKey>
     {
         public OrganizationDbContext() : base()
         {
