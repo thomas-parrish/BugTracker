@@ -12,7 +12,6 @@ namespace OrganizationalIdentity.UserManager
 {
     public class OrganizationUserRole : OrganizationUserRole<string>
     {
-
     }
 
     public class OrganizationUserRole<TKey> : IdentityUserRole<TKey> 

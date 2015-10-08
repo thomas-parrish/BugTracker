@@ -156,7 +156,6 @@ namespace OrganizationalIdentity.UserManager
         {
         }
 
-
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             if (modelBuilder == null)
@@ -164,7 +163,7 @@ namespace OrganizationalIdentity.UserManager
                 throw new ArgumentNullException("modelBuilder");
             }
 
-            var org = modelBuilder.Entity<Organization>()
+            var org = modelBuilder.Entity<Organization<TKey>>()
                 .ToTable("AspNetOrganizations");
             org.HasMany(o => o.Users).WithMany(u => u.Organizations).Map(map =>
             {
@@ -176,7 +175,7 @@ namespace OrganizationalIdentity.UserManager
 
 
             // Needed to ensure subclasses share the same table
-            var user = modelBuilder.Entity<OrganizationUser>()
+            var user = modelBuilder.Entity<OrganizationUser<TKey>>()
                 .ToTable("AspNetUsers");
             user.HasMany(u => u.Roles).WithRequired().HasForeignKey(ur => ur.UserId);
             user.HasMany(u => u.Claims).WithRequired().HasForeignKey(uc => uc.UserId);
@@ -189,15 +188,15 @@ namespace OrganizationalIdentity.UserManager
             // CONSIDER: u.Email is Required if set on options?
             user.Property(u => u.Email).HasMaxLength(256);
             
-            modelBuilder.Entity<IdentityUserLogin>()
+            modelBuilder.Entity<IdentityUserLogin<TKey>>()
                 .HasKey(l => new { l.LoginProvider, l.ProviderKey, l.UserId })
                 .ToTable("AspNetUserLogins");
 
-            modelBuilder.Entity<IdentityUserClaim>()
+            modelBuilder.Entity<IdentityUserClaim<TKey>>()
                 .ToTable("AspNetUserClaims");
 
             //DOES THIS NEED TO BE CHANGED?
-            var role = modelBuilder.Entity<OrganizationRole>()
+            var role = modelBuilder.Entity<OrganizationRole<TKey>>()
                 .ToTable("AspNetRoles");
             role.HasKey(r => r.Id);
             role.Property(r => r.Name)
@@ -206,13 +205,12 @@ namespace OrganizationalIdentity.UserManager
                 .HasColumnAnnotation("Index", new IndexAnnotation(new IndexAttribute("RoleNameIndex") { IsUnique = true }));
             role.HasMany(r => r.Users).WithRequired().HasForeignKey(ur => ur.RoleId);
 
-
             CreateOrganizationUserRoleModel(modelBuilder);
         }
 
         protected abstract void CreateOrganizationUserRoleModel(DbModelBuilder modelBuilder);
 
-        public IDbSet<OrganizationUserRole<TKey>> UserRoles { get; set; }
-        public IDbSet<Organization<TKey>> Organizations { get; set; }  
+        public DbSet<OrganizationUserRole<TKey>> UserRoles { get; set; }
+        public DbSet<Organization<TKey>> Organizations { get; set; }  
     }
 }

@@ -20,8 +20,8 @@ namespace OrganizationalIdentity.UserManager
     {
         public OrganizationUser()
         {
-            Organizations = new HashSet<Organization>();
+            Organizations = new HashSet<Organization<TKey>>();
         }
-        public virtual ICollection<Organization> Organizations { get; }
+        public virtual ICollection<Organization<TKey>> Organizations { get; }
     }
 }
