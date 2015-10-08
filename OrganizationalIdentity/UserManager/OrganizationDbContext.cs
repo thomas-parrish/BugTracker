@@ -12,10 +12,42 @@ using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace OrganizationalIdentity.UserManager
 {
-    public class OrganizationDbContext<TUser> :
+    public class OrganizationDbContext<TUser> : OrganizationDbContext<TUser, string> where TUser : OrganizationUser<string>
+    {
+        public OrganizationDbContext() : base()
+        {
+        }
+
+        public OrganizationDbContext(DbCompiledModel model) : base(model)
+        {
+        }
+
+        public OrganizationDbContext(string nameOrConnectionString) : base(nameOrConnectionString)
+        {
+        }
+
+        public OrganizationDbContext(string nameOrConnectionString, DbCompiledModel model)
+            : base(nameOrConnectionString, model)
+        {
+        }
+
+        public OrganizationDbContext(DbConnection existingConnection, bool contextOwnsConnection)
+            : base(existingConnection, contextOwnsConnection)
+        {
+        }
+
+        public OrganizationDbContext(DbConnection existingConnection, DbCompiledModel model, bool contextOwnsConnection)
+            : base(existingConnection, model, contextOwnsConnection)
+        {
+        }
+    }
+
+    public class OrganizationDbContext<TUser, TKey> :
         IdentityDbContext
-            <TUser, OrganizationRole, string, IdentityUserLogin,
-                OrganizationUserRole, IdentityUserClaim> where TUser: OrganizationUser
+            <TUser, OrganizationRole<TKey>, TKey, IdentityUserLogin<TKey>,
+                OrganizationUserRole<TKey>, IdentityUserClaim<TKey>> 
+        where TUser: OrganizationUser<TKey>
+        where TKey : struct, IEquatable<TKey>
     {
         public OrganizationDbContext() : base()
         {
@@ -60,7 +92,7 @@ namespace OrganizationalIdentity.UserManager
                 map.MapRightKey("UserId");
                 map.ToTable("AspNetOrganizationUsers");
             });
-            org.HasMany(o => o.Roles).WithRequired().HasForeignKey(r => r.OrganizationId);
+            org.HasMany(o => o.Roles).WithOptional().HasForeignKey(r => r.OrganizationId);
 
 
             // Needed to ensure subclasses share the same table
@@ -77,13 +109,13 @@ namespace OrganizationalIdentity.UserManager
             // CONSIDER: u.Email is Required if set on options?
             user.Property(u => u.Email).HasMaxLength(256);
 
-            var ourModel = modelBuilder.Entity<OrganizationUserRole>();
+            var ourModel = modelBuilder.Entity<OrganizationUserRole<TKey>>();
             ourModel
                 .ToTable("AspNetOrganizationUserRoles")
                 .HasKey(r => r.Id);
             ourModel
                 .HasOptional(m => m.Organization)
-                .WithMany()
+                .WithMany(o=>o.Roles)
                 .HasForeignKey(k => k.OrganizationId);
             ourModel
                 .Property(u=>u.UserId)
@@ -116,7 +148,7 @@ namespace OrganizationalIdentity.UserManager
             role.HasMany(r => r.Users).WithRequired().HasForeignKey(ur => ur.RoleId);
         }
 
-        public IDbSet<OrganizationUserRole> UserRoles { get; set; }
-        public IDbSet<Organization> Organizations { get; set; }  
+        public IDbSet<OrganizationUserRole<TKey>> UserRoles { get; set; }
+        public IDbSet<Organization<TKey>> Organizations { get; set; }  
     }
 }

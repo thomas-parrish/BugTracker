@@ -17,7 +17,8 @@ namespace BugTracker.Controllers
 
         // GET: Admin
         public ActionResult Index()
-        {   
+        {
+            var t = User.IsInRole("Admin");
             return View(_db.Roles.ToList());
         }
 

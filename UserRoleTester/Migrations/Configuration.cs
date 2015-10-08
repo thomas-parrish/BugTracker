@@ -35,7 +35,7 @@ namespace UserRoleTester.Migrations
 
             var m = new OrganizationUserManager<ApplicationUser>(new OrganizationUserStore<ApplicationUser>(db));
 
-            var r = new RoleManager<OrganizationRole,string>(new RoleStore<OrganizationRole, string, OrganizationUserRole>(db));
+            var r = new RoleManager<OrganizationRole>(new RoleStore<OrganizationRole, string, OrganizationUserRole<string>>(db));
 
             if (!db.Users.Any(u => u.UserName == "tparrish@coderfoundry.com"))
             {

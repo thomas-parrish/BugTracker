@@ -10,13 +10,19 @@ using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace OrganizationalIdentity.UserManager
 {
-    public class OrganizationUserRole : IdentityUserRole<string>
+    public class OrganizationUserRole : OrganizationUserRole<string>
+    {
+
+    }
+
+    public class OrganizationUserRole<TKey> : IdentityUserRole<TKey> 
+        where TKey : IEquatable<TKey>
     {
         public int Id { get; set; }
-        public string OrganizationId { get; set; }
+        public TKey OrganizationId { get; set; }
 
-        public virtual OrganizationUser User { get; set; }
-        public virtual OrganizationRole Role { get; set; }
-        public virtual Organization Organization { get; set; }
+        public virtual OrganizationUser<TKey> User { get; set; }
+        public virtual OrganizationRole<TKey> Role { get; set; }
+        public virtual Organization<TKey> Organization { get; set; }
     }
 }
