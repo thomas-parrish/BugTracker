@@ -40,9 +40,89 @@ namespace OrganizationalIdentity.UserManager
             : base(existingConnection, model, contextOwnsConnection)
         {
         }
+
+        protected override void CreateOrganizationUserRoleModel(DbModelBuilder modelBuilder)
+        {
+            var ourModel = modelBuilder.Entity<OrganizationUserRole<string>>();
+            ourModel
+                .ToTable("AspNetOrganizationUserRoles")
+                .HasKey(r => r.Id);
+            ourModel
+                .HasOptional(m => m.Organization)
+                .WithMany(o => o.Roles)
+                .HasForeignKey(k => k.OrganizationId);
+            ourModel
+                .Property(u => u.UserId)
+                .HasColumnAnnotation("Index",
+                    new IndexAnnotation(new IndexAttribute("IX_Unique_AspNetOrganizationUserRoles") { IsUnique = true, Order = 0 }));
+            ourModel
+                .Property(u => u.RoleId)
+                .HasColumnAnnotation("Index",
+                    new IndexAnnotation(new IndexAttribute("IX_Unique_AspNetOrganizationUserRoles") { IsUnique = true, Order = 1 }));
+            ourModel
+                .Property(u => u.OrganizationId)
+                .HasColumnAnnotation("Index",
+                    new IndexAnnotation(new IndexAttribute("IX_Unique_AspNetOrganizationUserRoles") { IsUnique = true, Order = 2 }));
+        }
     }
 
-    public class OrganizationDbContext<TUser, TKey> :
+    public class OrganizationDbContextValueKey<TUser, TKey> : OrganizationDbContext<TUser, TKey>
+        where TUser : OrganizationUser<TKey>
+        where TKey : struct, IEquatable<TKey>
+    {
+        public OrganizationDbContextValueKey() : base()
+        {
+        }
+
+        public OrganizationDbContextValueKey(DbCompiledModel model) : base(model)
+        {
+        }
+
+        public OrganizationDbContextValueKey(string nameOrConnectionString) : base(nameOrConnectionString)
+        {
+        }
+
+        public OrganizationDbContextValueKey(string nameOrConnectionString, DbCompiledModel model)
+            : base(nameOrConnectionString, model)
+        {
+        }
+
+        public OrganizationDbContextValueKey(DbConnection existingConnection, bool contextOwnsConnection)
+            : base(existingConnection, contextOwnsConnection)
+        {
+        }
+
+        public OrganizationDbContextValueKey(DbConnection existingConnection, DbCompiledModel model, bool contextOwnsConnection)
+            : base(existingConnection, model, contextOwnsConnection)
+        {
+        }
+
+        protected override void CreateOrganizationUserRoleModel(DbModelBuilder modelBuilder)
+        {
+            var ourModel = modelBuilder.Entity<OrganizationUserRole<TKey>>();
+            ourModel
+                .ToTable("AspNetOrganizationUserRoles")
+                .HasKey(r => r.Id);
+            ourModel
+                .HasOptional(m => m.Organization)
+                .WithMany(o => o.Roles)
+                .HasForeignKey(k => k.OrganizationId);
+            ourModel
+                .Property(u => u.UserId)
+                .HasColumnAnnotation("Index",
+                    new IndexAnnotation(new IndexAttribute("IX_Unique_AspNetOrganizationUserRoles") { IsUnique = true, Order = 0 }));
+            ourModel
+                .Property(u => u.RoleId)
+                .HasColumnAnnotation("Index",
+                    new IndexAnnotation(new IndexAttribute("IX_Unique_AspNetOrganizationUserRoles") { IsUnique = true, Order = 1 }));
+            ourModel
+                .Property(u => u.OrganizationId)
+                .HasColumnAnnotation("Index",
+                    new IndexAnnotation(new IndexAttribute("IX_Unique_AspNetOrganizationUserRoles") { IsUnique = true, Order = 2 }));
+        }
+    }
+
+    public abstract class OrganizationDbContext<TUser, TKey> :
         IdentityDbContext
             <TUser, OrganizationRole<TKey>, TKey, IdentityUserLogin<TKey>,
                 OrganizationUserRole<TKey>, IdentityUserClaim<TKey>> 
@@ -108,27 +188,6 @@ namespace OrganizationalIdentity.UserManager
 
             // CONSIDER: u.Email is Required if set on options?
             user.Property(u => u.Email).HasMaxLength(256);
-
-            var ourModel = modelBuilder.Entity<OrganizationUserRole<TKey>>();
-            ourModel
-                .ToTable("AspNetOrganizationUserRoles")
-                .HasKey(r => r.Id);
-            ourModel
-                .HasOptional(m => m.Organization)
-                .WithMany(o=>o.Roles)
-                .HasForeignKey(k => k.OrganizationId);
-            ourModel
-                .Property(u=>u.UserId)
-                .HasColumnAnnotation("Index",
-                    new IndexAnnotation(new IndexAttribute("IX_Unique_AspNetOrganizationUserRoles") { IsUnique = true, Order = 0}));
-            ourModel
-                .Property(u => u.RoleId)
-                .HasColumnAnnotation("Index",
-                    new IndexAnnotation(new IndexAttribute("IX_Unique_AspNetOrganizationUserRoles") { IsUnique = true, Order = 1 }));
-            ourModel
-                .Property(u => u.OrganizationId)
-                .HasColumnAnnotation("Index",
-                    new IndexAnnotation(new IndexAttribute("IX_Unique_AspNetOrganizationUserRoles") { IsUnique = true, Order = 2 }));
             
             modelBuilder.Entity<IdentityUserLogin>()
                 .HasKey(l => new { l.LoginProvider, l.ProviderKey, l.UserId })
@@ -146,7 +205,12 @@ namespace OrganizationalIdentity.UserManager
                 .HasMaxLength(256)
                 .HasColumnAnnotation("Index", new IndexAnnotation(new IndexAttribute("RoleNameIndex") { IsUnique = true }));
             role.HasMany(r => r.Users).WithRequired().HasForeignKey(ur => ur.RoleId);
+
+
+            CreateOrganizationUserRoleModel(modelBuilder);
         }
+
+        protected abstract void CreateOrganizationUserRoleModel(DbModelBuilder modelBuilder);
 
         public IDbSet<OrganizationUserRole<TKey>> UserRoles { get; set; }
         public IDbSet<Organization<TKey>> Organizations { get; set; }  
