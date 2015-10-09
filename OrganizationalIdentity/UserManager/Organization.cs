@@ -7,29 +7,21 @@ using System.Threading.Tasks;
 
 namespace OrganizationalIdentity.UserManager
 {
-    public class Organization : Organization<string>
+    public class Organization
     {
-        public Organization() : base()
-        {
-            Id = Guid.NewGuid().ToString();
-        }
-
-    }
-
-    public class Organization<TKey>
-        where TKey : IEquatable<TKey>
-    {
-        public TKey Id { get; set; }
+        public string Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
 
-        public virtual ICollection<OrganizationUser<TKey>> Users { get; set; }
-        public virtual ICollection<OrganizationUserRole<TKey>> Roles { get; set; }
+        public virtual ICollection<OrganizationUser> Users { get; set; }
+        public virtual ICollection<OrganizationUserRole> Roles { get; set; }
 
-        public Organization()
+        public Organization() : base()
         {
-            Users = new HashSet<OrganizationUser<TKey>>();
-            Roles = new HashSet<OrganizationUserRole<TKey>>();
+            Id = Guid.NewGuid().ToString();
+            Users = new HashSet<OrganizationUser>();
+            Roles = new HashSet<OrganizationUserRole>();
         }
+
     } 
 }

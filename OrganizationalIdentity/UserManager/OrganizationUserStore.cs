@@ -13,29 +13,20 @@ using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace OrganizationalIdentity.UserManager
 {
-    public class OrganizationUserStore<TUser> : OrganizationUserStore<TUser, string>
+    public class OrganizationUserStore<TUser> :
+        IUserLoginStore<TUser, string>,
+        IUserClaimStore<TUser, string>,
+        IUserRoleStore<TUser, string>,
+        IUserPasswordStore<TUser, string>,
+        IUserSecurityStampStore<TUser, string>,
+        IQueryableUserStore<TUser, string>,
+        IUserEmailStore<TUser, string>,
+        IUserPhoneNumberStore<TUser, string>,
+        IUserTwoFactorStore<TUser, string>,
+        IUserLockoutStore<TUser, string>
         where TUser : OrganizationUser, IUser<string>
     {
-        public OrganizationUserStore(OrganizationDbContext<TUser> context) : base(context)
-        {
-        }
-    }
-
-    public class OrganizationUserStore<TUser, TKey> :
-        IUserLoginStore<TUser, TKey>,
-        IUserClaimStore<TUser, TKey>,
-        IUserRoleStore<TUser, TKey>,
-        IUserPasswordStore<TUser, TKey>,
-        IUserSecurityStampStore<TUser, TKey>,
-        IQueryableUserStore<TUser, TKey>,
-        IUserEmailStore<TUser, TKey>,
-        IUserPhoneNumberStore<TUser, TKey>,
-        IUserTwoFactorStore<TUser, TKey>,
-        IUserLockoutStore<TUser, TKey>
-        where TKey : IEquatable<TKey>
-        where TUser : OrganizationUser<TKey>, IUser<TKey>
-    {
-        protected OrganizationDbContext<TUser, TKey> Context { get; private set; }
+        protected OrganizationDbContext<TUser> Context { get; private set; }
         public bool AutoSaveChanges { get; set; } = true;
 
         /// <summary>
@@ -43,12 +34,12 @@ namespace OrganizationalIdentity.UserManager
         /// </summary>
         public bool DisposeContext { get; set; }
 
-        public OrganizationUserStore(OrganizationDbContext<TUser, TKey> context)
+        public OrganizationUserStore(OrganizationDbContext<TUser> context)
         {
             Context = context;
         }
 
-        public async Task AddToRoleAsync(TUser user, TKey organizationId, string roleName)
+        public async Task AddToRoleAsync(TUser user, string organizationId, string roleName)
         {
             if (user == null)
             {
@@ -58,13 +49,13 @@ namespace OrganizationalIdentity.UserManager
             {
                 throw new ArgumentException("roleName cannot be empty","roleName");
             }
-            var roleEntity = await Context.Set<OrganizationRole<TKey>>().SingleOrDefaultAsync(r => String.Equals(r.Name, roleName, StringComparison.CurrentCultureIgnoreCase)).WithCurrentCulture();
+            var roleEntity = await Context.Set<OrganizationRole>().SingleOrDefaultAsync(r => String.Equals(r.Name, roleName, StringComparison.CurrentCultureIgnoreCase)).WithCurrentCulture();
             if (roleEntity == null)
             {
                 throw new InvalidOperationException(String.Format(CultureInfo.CurrentCulture,
                     "Role not found", roleName));
             }
-            var orgUserEntity = await Context.Set<Organization<TKey>>().SingleOrDefaultAsync(o => o.Id.Equals(organizationId));
+            var orgUserEntity = await Context.Set<Organization>().SingleOrDefaultAsync(o => o.Id.Equals(organizationId));
             if (orgUserEntity == null)
             {
                 throw new InvalidOperationException(String.Format(CultureInfo.CurrentCulture,
@@ -76,10 +67,10 @@ namespace OrganizationalIdentity.UserManager
                     "The user is not a member of the organization", roleName));
             }
 
-            var ur = new OrganizationUserRole<TKey>() { UserId = user.Id, RoleId = roleEntity.Id, OrganizationId = organizationId};
+            var ur = new OrganizationUserRole() { UserId = user.Id, RoleId = roleEntity.Id, OrganizationId = organizationId};
             if (!orgUserEntity.Roles.Any(our => our.OrganizationId.Equals(organizationId) && our.RoleId.Equals(roleEntity.Id )&& our.UserId.Equals(user.Id)))
             {
-                Context.Set<OrganizationUserRole<TKey>>().Add(ur);
+                Context.Set<OrganizationUserRole>().Add(ur);
                 if (AutoSaveChanges)
                     await Context.SaveChangesAsync();    
             }
@@ -91,11 +82,6 @@ namespace OrganizationalIdentity.UserManager
         }
 
         public Task DeleteAsync(TUser user)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<TUser> FindByIdAsync(string userId)
         {
             throw new NotImplementedException();
         }
@@ -152,7 +138,7 @@ namespace OrganizationalIdentity.UserManager
             throw new NotImplementedException();
         }
 
-        public Task<TUser> FindByIdAsync(TKey userId)
+        public Task<TUser> FindByIdAsync(string userId)
         {
             return Context.Set<TUser>().Include(c => c.Claims)
                 .Include(l => l.Logins)

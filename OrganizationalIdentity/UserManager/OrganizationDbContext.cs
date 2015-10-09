@@ -12,122 +12,11 @@ using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace OrganizationalIdentity.UserManager
 {
-    public class OrganizationDbContext<TUser> : OrganizationDbContext<TUser, string> where TUser : OrganizationUser<string>
-    {
-        public OrganizationDbContext() : base()
-        {
-        }
-
-        public OrganizationDbContext(DbCompiledModel model) : base(model)
-        {
-        }
-
-        public OrganizationDbContext(string nameOrConnectionString) : base(nameOrConnectionString)
-        {
-        }
-
-        public OrganizationDbContext(string nameOrConnectionString, DbCompiledModel model)
-            : base(nameOrConnectionString, model)
-        {
-        }
-
-        public OrganizationDbContext(DbConnection existingConnection, bool contextOwnsConnection)
-            : base(existingConnection, contextOwnsConnection)
-        {
-        }
-
-        public OrganizationDbContext(DbConnection existingConnection, DbCompiledModel model, bool contextOwnsConnection)
-            : base(existingConnection, model, contextOwnsConnection)
-        {
-        }
-
-        protected override void CreateOrganizationUserRoleModel(DbModelBuilder modelBuilder)
-        {
-            var ourModel = modelBuilder.Entity<OrganizationUserRole<string>>();
-            ourModel
-                .ToTable("AspNetOrganizationUserRoles")
-                .HasKey(r => r.Id);
-            ourModel
-                .HasOptional(m => m.Organization)
-                .WithMany(o => o.Roles)
-                .HasForeignKey(k => k.OrganizationId);
-            ourModel
-                .Property(u => u.UserId)
-                .HasColumnAnnotation("Index",
-                    new IndexAnnotation(new IndexAttribute("IX_Unique_AspNetOrganizationUserRoles") { IsUnique = true, Order = 0 }));
-            ourModel
-                .Property(u => u.RoleId)
-                .HasColumnAnnotation("Index",
-                    new IndexAnnotation(new IndexAttribute("IX_Unique_AspNetOrganizationUserRoles") { IsUnique = true, Order = 1 }));
-            ourModel
-                .Property(u => u.OrganizationId)
-                .HasColumnAnnotation("Index",
-                    new IndexAnnotation(new IndexAttribute("IX_Unique_AspNetOrganizationUserRoles") { IsUnique = true, Order = 2 }));
-        }
-    }
-
-    public class OrganizationDbContextValueKey<TUser, TKey> : OrganizationDbContext<TUser, TKey>
-        where TUser : OrganizationUser<TKey>
-        where TKey : struct, IEquatable<TKey>
-    {
-        public OrganizationDbContextValueKey() : base()
-        {
-        }
-
-        public OrganizationDbContextValueKey(DbCompiledModel model) : base(model)
-        {
-        }
-
-        public OrganizationDbContextValueKey(string nameOrConnectionString) : base(nameOrConnectionString)
-        {
-        }
-
-        public OrganizationDbContextValueKey(string nameOrConnectionString, DbCompiledModel model)
-            : base(nameOrConnectionString, model)
-        {
-        }
-
-        public OrganizationDbContextValueKey(DbConnection existingConnection, bool contextOwnsConnection)
-            : base(existingConnection, contextOwnsConnection)
-        {
-        }
-
-        public OrganizationDbContextValueKey(DbConnection existingConnection, DbCompiledModel model, bool contextOwnsConnection)
-            : base(existingConnection, model, contextOwnsConnection)
-        {
-        }
-
-        protected override void CreateOrganizationUserRoleModel(DbModelBuilder modelBuilder)
-        {
-            var ourModel = modelBuilder.Entity<OrganizationUserRole<TKey>>();
-            ourModel
-                .ToTable("AspNetOrganizationUserRoles")
-                .HasKey(r => r.Id);
-            ourModel
-                .HasOptional(m => m.Organization)
-                .WithMany(o => o.Roles)
-                .HasForeignKey(k => k.OrganizationId);
-            ourModel
-                .Property(u => u.UserId)
-                .HasColumnAnnotation("Index",
-                    new IndexAnnotation(new IndexAttribute("IX_Unique_AspNetOrganizationUserRoles") { IsUnique = true, Order = 0 }));
-            ourModel
-                .Property(u => u.RoleId)
-                .HasColumnAnnotation("Index",
-                    new IndexAnnotation(new IndexAttribute("IX_Unique_AspNetOrganizationUserRoles") { IsUnique = true, Order = 1 }));
-            ourModel
-                .Property(u => u.OrganizationId)
-                .HasColumnAnnotation("Index",
-                    new IndexAnnotation(new IndexAttribute("IX_Unique_AspNetOrganizationUserRoles") { IsUnique = true, Order = 2 }));
-        }
-    }
-
-    public abstract class OrganizationDbContext<TUser, TKey> :
+    public class OrganizationDbContext<TUser> :
         IdentityDbContext
-            <TUser, OrganizationRole<TKey>, TKey, IdentityUserLogin<TKey>,
-                OrganizationUserRole<TKey>, IdentityUserClaim<TKey>> 
-        where TUser: OrganizationUser<TKey>
-        where TKey : IEquatable<TKey>
+            <TUser, OrganizationRole, string, IdentityUserLogin,
+                OrganizationUserRole, IdentityUserClaim> 
+        where TUser : OrganizationUser
     {
         public OrganizationDbContext() : base()
         {
@@ -163,7 +52,7 @@ namespace OrganizationalIdentity.UserManager
                 throw new ArgumentNullException("modelBuilder");
             }
 
-            var org = modelBuilder.Entity<Organization<TKey>>()
+            var org = modelBuilder.Entity<Organization>()
                 .ToTable("AspNetOrganizations");
             org.HasMany(o => o.Users).WithMany(u => u.Organizations).Map(map =>
             {
@@ -175,7 +64,7 @@ namespace OrganizationalIdentity.UserManager
 
 
             // Needed to ensure subclasses share the same table
-            var user = modelBuilder.Entity<OrganizationUser<TKey>>()
+            var user = modelBuilder.Entity<OrganizationUser>()
                 .ToTable("AspNetUsers");
             user.HasMany(u => u.Roles).WithRequired().HasForeignKey(ur => ur.UserId);
             user.HasMany(u => u.Claims).WithRequired().HasForeignKey(uc => uc.UserId);
@@ -188,15 +77,15 @@ namespace OrganizationalIdentity.UserManager
             // CONSIDER: u.Email is Required if set on options?
             user.Property(u => u.Email).HasMaxLength(256);
             
-            modelBuilder.Entity<IdentityUserLogin<TKey>>()
+            modelBuilder.Entity<IdentityUserLogin>()
                 .HasKey(l => new { l.LoginProvider, l.ProviderKey, l.UserId })
                 .ToTable("AspNetUserLogins");
 
-            modelBuilder.Entity<IdentityUserClaim<TKey>>()
+            modelBuilder.Entity<IdentityUserClaim>()
                 .ToTable("AspNetUserClaims");
 
             //DOES THIS NEED TO BE CHANGED?
-            var role = modelBuilder.Entity<OrganizationRole<TKey>>()
+            var role = modelBuilder.Entity<OrganizationRole>()
                 .ToTable("AspNetRoles");
             role.HasKey(r => r.Id);
             role.Property(r => r.Name)
@@ -208,9 +97,31 @@ namespace OrganizationalIdentity.UserManager
             CreateOrganizationUserRoleModel(modelBuilder);
         }
 
-        protected abstract void CreateOrganizationUserRoleModel(DbModelBuilder modelBuilder);
+        protected void CreateOrganizationUserRoleModel(DbModelBuilder modelBuilder)
+        {
+            var ourModel = modelBuilder.Entity<OrganizationUserRole>();
+            ourModel
+                .ToTable("AspNetOrganizationUserRoles")
+                .HasKey(r => r.Id);
+            ourModel
+                .HasOptional(m => m.Organization)
+                .WithMany(o => o.Roles)
+                .HasForeignKey(k => k.OrganizationId);
+            ourModel
+                .Property(u => u.UserId)
+                .HasColumnAnnotation("Index",
+                    new IndexAnnotation(new IndexAttribute("IX_Unique_AspNetOrganizationUserRoles") { IsUnique = true, Order = 0 }));
+            ourModel
+                .Property(u => u.RoleId)
+                .HasColumnAnnotation("Index",
+                    new IndexAnnotation(new IndexAttribute("IX_Unique_AspNetOrganizationUserRoles") { IsUnique = true, Order = 1 }));
+            ourModel
+                .Property(u => u.OrganizationId)
+                .HasColumnAnnotation("Index",
+                    new IndexAnnotation(new IndexAttribute("IX_Unique_AspNetOrganizationUserRoles") { IsUnique = true, Order = 2 }));
+        }
 
-        public DbSet<OrganizationUserRole<TKey>> UserRoles { get; set; }
-        public DbSet<Organization<TKey>> Organizations { get; set; }  
+        public DbSet<OrganizationUserRole> UserRoles { get; set; }
+        public DbSet<Organization> Organizations { get; set; }  
     }
 }

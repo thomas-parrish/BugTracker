@@ -7,21 +7,12 @@ using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace OrganizationalIdentity.UserManager
 {
-    public class OrganizationUser : OrganizationUser<string>
+    public class OrganizationUser : IdentityUser<string, IdentityUserLogin, OrganizationUserRole, IdentityUserClaim>
     {
         public OrganizationUser() : base()
         {
             this.Id = Guid.NewGuid().ToString();
         }
-    }
-
-    public class OrganizationUser<TKey> : IdentityUser<TKey, IdentityUserLogin<TKey>, OrganizationUserRole<TKey>, IdentityUserClaim<TKey>>
-        where TKey : IEquatable<TKey>
-    {
-        public OrganizationUser()
-        {
-            Organizations = new HashSet<Organization<TKey>>();
-        }
-        public virtual ICollection<Organization<TKey>> Organizations { get; }
+        public virtual ICollection<Organization> Organizations { get; }
     }
 }

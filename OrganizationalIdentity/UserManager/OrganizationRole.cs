@@ -7,19 +7,12 @@ using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace OrganizationalIdentity.UserManager
 {
-    public class OrganizationRole : OrganizationRole<string>
+    public class OrganizationRole: IdentityRole<string, OrganizationUserRole>
     {
         public OrganizationRole() 
         {
             Id = Guid.NewGuid().ToString();
         }
-    }
-
-    public class OrganizationRole<TKey> : IdentityRole<TKey,OrganizationUserRole<TKey>> 
-        where TKey : IEquatable<TKey>
-    {
-        public OrganizationRole() { }
-
         public OrganizationRole(string roleName) : this()
         {
             Name = roleName;

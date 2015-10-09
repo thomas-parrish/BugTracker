@@ -12,7 +12,7 @@ namespace UserRoleTester.Models
     {
         public ApplicationUser() : base() {}
 
-        public async Task<ClaimsIdentity> GenerateUserIdentityAsync(OrganizationUserManager<ApplicationUser, string> manager)
+        public async Task<ClaimsIdentity> GenerateUserIdentityAsync(OrganizationUserManager<ApplicationUser> manager)
         {
             // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType
             var userIdentity = await manager.CreateIdentityAsync(this, DefaultAuthenticationTypes.ApplicationCookie);
