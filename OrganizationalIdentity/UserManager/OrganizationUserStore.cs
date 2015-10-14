@@ -246,6 +246,7 @@ namespace OrganizationalIdentity.UserManager
             }
         }
 
+        //New - Only gets global roles, does not return organization roles
         public async Task<IList<string>> GetRolesAsync(TUser user)
         {
             ThrowIfDisposed();
@@ -255,9 +256,26 @@ namespace OrganizationalIdentity.UserManager
             }
             var userId = user.Id;
             var query = from userRole in Context.Set<OrganizationUserRole>()
-                        where userRole.UserId.Equals(userId)
+                        where userRole.UserId.Equals(userId) && 
+                        (userRole.OrganizationId == null || userRole.OrganizationId == "")
                         join role in Context.Set<OrganizationRole>() on userRole.RoleId equals role.Id
                         select role.Name;
+            return await query.ToListAsync().WithCurrentCulture();
+        }
+
+        //New - Gets only roles with organization
+        public async Task<IList<OrganizationUserRole>> GetOrganizationRolesAsync(TUser user)
+        {
+            ThrowIfDisposed();
+            if (user == null)
+            {
+                throw new ArgumentNullException("user");
+            }
+            var userId = user.Id;
+            var query = from userRole in Context.Set<OrganizationUserRole>().Include(i=>i.Role)
+                        where userRole.UserId.Equals(userId) &&
+                        (userRole.OrganizationId != null && userRole.OrganizationId != "")
+                        select userRole;
             return await query.ToListAsync().WithCurrentCulture();
         }
 

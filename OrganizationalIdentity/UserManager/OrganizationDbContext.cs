@@ -18,6 +18,8 @@ namespace OrganizationalIdentity.UserManager
                 OrganizationUserRole, IdentityUserClaim> 
         where TUser : OrganizationUser
     {
+
+        #region constructors
         public OrganizationDbContext() : base()
         {
         }
@@ -44,6 +46,7 @@ namespace OrganizationalIdentity.UserManager
             : base(existingConnection, model, contextOwnsConnection)
         {
         }
+        #endregion
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {

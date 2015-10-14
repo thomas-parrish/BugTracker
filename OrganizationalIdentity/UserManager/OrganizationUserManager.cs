@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.Entity.SqlServer.Utilities;
 using System.Globalization;
 using System.Linq;
@@ -22,6 +23,7 @@ namespace OrganizationalIdentity.UserManager
         {
 
         }
+
         public override async Task<IdentityResult> AddClaimAsync(string userId, Claim claim)
         {
             var result = await base.AddClaimAsync(userId, claim);
@@ -71,7 +73,6 @@ namespace OrganizationalIdentity.UserManager
                 TriggerRegenerateIdentity(userId);
             return result;
         }
-        
 
         public override async Task<IdentityResult> RemoveClaimAsync(string userId, Claim claim)
         {
@@ -95,6 +96,23 @@ namespace OrganizationalIdentity.UserManager
             if (result == IdentityResult.Success)
                 TriggerRegenerateIdentity(userId);
             return result;
+        }
+
+        public override async Task<ClaimsIdentity> CreateIdentityAsync(TUser user, string authenticationType)
+        {
+            var identity = await base.CreateIdentityAsync(user, authenticationType);
+            //Add custom claims here
+            var store = Store as OrganizationUserStore<TUser>;
+            if(store == null)
+                throw new InvalidCastException("Store is not an OrganizationUserStore");
+
+            var organizationRoles = await store.GetOrganizationRolesAsync(user);
+
+            if(organizationRoles!= null)
+                foreach(var role in organizationRoles)
+                    identity.AddClaim(new Claim($"OrganizationRole/{role.OrganizationId}", role.Role.Name));
+
+            return identity;
         }
 
         public bool TriggerRegenerateIdentity(string userId)

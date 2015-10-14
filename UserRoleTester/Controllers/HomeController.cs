@@ -9,6 +9,7 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using OrganizationalIdentity.UserManager;
 using UserRoleTester.Migrations;
 using UserRoleTester.Models;
+using OrganizationalIdentity.Authorization;
 
 namespace UserRoleTester.Controllers
 {
@@ -25,21 +26,21 @@ namespace UserRoleTester.Controllers
             new Configuration().Seed(db, true);
 
             var m = new OrganizationUserManager<ApplicationUser>(new OrganizationUserStore<ApplicationUser>(db));
-
             var u = User as ClaimsPrincipal;
 
             return View();
         }
 
-        [Authorize(Roles="Admin")]
-        public ActionResult About()
+        [OrganizationAuthorize(Roles="Admin", OrganizationProperty = "organizationId")]
+        [Route("~/About/{organizationId}")]
+        public ActionResult About(string organizationId)
         {
             ViewBag.Message = "Your application description page.";
 
             return View();
         }
 
-        [Authorize(Roles="SuperAdmin")]
+        [OrganizationAuthorize(Roles="SuperAdmin")]
         public ActionResult Contact()
         {
             ViewBag.Message = "Your contact page.";
