@@ -7,6 +7,7 @@ using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using OrganizationalIdentity.UserManager;
+using UserRoleTester.Migrations;
 using UserRoleTester.Models;
 
 namespace UserRoleTester.Controllers
@@ -21,6 +22,7 @@ namespace UserRoleTester.Controllers
                 t = User.IsInRole("Admin");
 
             var db = new ApplicationDbContext(); 
+            new Configuration().Seed(db, true);
 
             var m = new OrganizationUserManager<ApplicationUser>(new OrganizationUserStore<ApplicationUser>(db));
 

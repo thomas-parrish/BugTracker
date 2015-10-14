@@ -97,6 +97,7 @@
     <Compile Include="UserManager\OrganizationUserManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UserManager\OrganizationUserStore.cs" />
+    <Compile Include="UserManager\RegenerateIdentityTrigger.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

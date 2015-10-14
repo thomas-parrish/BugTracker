@@ -15,7 +15,9 @@ namespace OrganizationalIdentity.UserManager
     {
         public int Id { get; set; }
         public string OrganizationId { get; set; }
-
+        
+        //Not sure what to do here, to allow easy extension of the user class
+        //with custom properties.
         public virtual OrganizationUser User { get; set; }
         public virtual OrganizationRole Role { get; set; }
         public virtual Organization Organization { get; set; }

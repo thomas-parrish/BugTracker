@@ -13,14 +13,12 @@ namespace OrganizationalIdentity.UserManager
         public string Name { get; set; }
         public string Description { get; set; }
 
-        public virtual ICollection<OrganizationUser> Users { get; set; }
-        public virtual ICollection<OrganizationUserRole> Roles { get; set; }
+        public virtual ICollection<OrganizationUser> Users { get; set; } = new HashSet<OrganizationUser>();
+        public virtual ICollection<OrganizationUserRole> Roles { get; set; } = new HashSet<OrganizationUserRole>();
 
         public Organization() : base()
         {
             Id = Guid.NewGuid().ToString();
-            Users = new HashSet<OrganizationUser>();
-            Roles = new HashSet<OrganizationUserRole>();
         }
 
     } 

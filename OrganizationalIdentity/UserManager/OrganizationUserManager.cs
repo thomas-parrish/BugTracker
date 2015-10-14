@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Data.Entity.SqlServer.Utilities;
+using System.Globalization;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -36,20 +38,30 @@ namespace OrganizationalIdentity.UserManager
                 TriggerRegenerateIdentity(userId);
             return result;
         }
-        public async Task<IdentityResult> AddToRoleAsync(TUser user, string organizationId, string role)
+        public async Task<IdentityResult> AddToRoleAsync(string userId, string organizationId, string role)
         {
-            var orgStore = Store as OrganizationUserStore<TUser>;
-            if(orgStore == null)
-                throw new InvalidCastException("Cannot convert UserStore to OrganizationUserStore");
-
-            await orgStore.AddToRoleAsync(user, organizationId, role);
-            TriggerRegenerateIdentity(user.Id);
-            return IdentityResult.Success;
+            var userRoleStore = Store as OrganizationUserStore<TUser>;
+            if( userRoleStore == null )
+                throw new InvalidCastException("Could not convert Store to OrganizationUserStore");
+            var user = await FindByIdAsync(userId).WithCurrentCulture();
+            if (user == null)
+            {
+                throw new InvalidOperationException(String.Format(CultureInfo.CurrentCulture, "User with id {0} was not found.",
+                    userId));
+            }
+            var userRoles = await userRoleStore.GetRolesAsync(user).WithCurrentCulture();
+            if (userRoles.Contains(role))
+            {
+                return new IdentityResult($"User is already in the role {role}.");
+            }
+            await userRoleStore.AddToRoleAsync(user, organizationId, role).WithCurrentCulture();
+            TriggerRegenerateIdentity(userId);
+            return await UpdateAsync(user).WithCurrentCulture();
         }
 
-        public void AddToRole(TUser user, string organizationId, string roleName)
+        public void AddToRole(string userId, string organizationId, string roleName)
         {
-            AsyncHelper.RunSync(() => AddToRoleAsync(user, organizationId, roleName));
+            AsyncHelper.RunSync(() => AddToRoleAsync(userId, organizationId, roleName));
         }
 
         public override async Task<IdentityResult> AddToRolesAsync(string userId, params string[] roles)
@@ -99,6 +111,5 @@ namespace OrganizationalIdentity.UserManager
                 null);
             return true;
         }
-
     }
 }
