@@ -31,7 +31,7 @@ namespace UserRoleTester.Controllers
             return View();
         }
 
-        [OrganizationAuthorize(Roles="Admin", OrganizationProperty = "organizationId")]
+        [OrganizationAuthorize(OrganizationRoles = "Admin", OrganizationProperty = "organizationId")]
         [Route("~/About/{organizationId}")]
         public ActionResult About(string organizationId)
         {
