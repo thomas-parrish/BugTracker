@@ -117,17 +117,20 @@
     <Compile Include="Authorization\AuthorizationExtensions.cs" />
     <Compile Include="Authorization\OrganizationAuthorizeAttribute.cs" />
     <Compile Include="EntityFrameworkExtensions\DbExtensions.cs" />
+    <Compile Include="Interfaces\IOrganizationStore.cs" />
     <Compile Include="Models\JsonClaim.cs" />
-    <Compile Include="UserManager\AsyncHelper.cs" />
-    <Compile Include="UserManager\Organization.cs" />
-    <Compile Include="UserManager\OrganizationDbContext.cs" />
-    <Compile Include="UserManager\OrganizationRole.cs" />
-    <Compile Include="UserManager\OrganizationUserRole.cs" />
-    <Compile Include="UserManager\OrganizationUser.cs" />
-    <Compile Include="UserManager\OrganizationUserManager.cs" />
+    <Compile Include="UserManager\Helpers\AsyncHelper.cs" />
+    <Compile Include="UserManager\Managers\OrganizationManager.cs" />
+    <Compile Include="UserManager\Models\Organization.cs" />
+    <Compile Include="UserManager\DbContext\OrganizationDbContext.cs" />
+    <Compile Include="UserManager\Models\OrganizationRole.cs" />
+    <Compile Include="UserManager\Stores\OrganizationStore.cs" />
+    <Compile Include="UserManager\Models\OrganizationUserRole.cs" />
+    <Compile Include="UserManager\Models\OrganizationUser.cs" />
+    <Compile Include="UserManager\Managers\OrganizationUserManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UserManager\OrganizationUserStore.cs" />
-    <Compile Include="UserManager\RegenerateIdentityTrigger.cs" />
+    <Compile Include="UserManager\Stores\OrganizationUserStore.cs" />
+    <Compile Include="UserManager\Helpers\RegenerateIdentityTrigger.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

@@ -10,11 +10,22 @@ using System.Web.Mvc;
 
 namespace OrganizationalIdentity.Authorization
 {
+    public enum PropertyLocation
+    {
+        Route,
+        Params,
+        Form,
+        Session,
+        Cookie,
+        Query,
+        Default
+    }
+
     public class OrganizationAuthorizeAttribute : AuthorizeAttribute
     {
         public string OrganizationProperty { get; set; }
         public string OrganizationRoles { get; set; }
-        public string PropertyLocation { get; set; }
+        public PropertyLocation PropertyLocation { get; set; }
         public bool UseSession { get; set; } = false;
         public bool UseCookies { get; set; } = false;
         public string CookieName { get; set; }
@@ -28,28 +39,29 @@ namespace OrganizationalIdentity.Authorization
 
             string organizationId = null;
 
-            switch (PropertyLocation.ToUpper())
+            switch (PropertyLocation)
             {
-                case "ROUTE":
+                case PropertyLocation.Route:
                     organizationId = (string)httpContext.Request.RequestContext.RouteData.Values[OrganizationProperty];
                     break;
-                case "PARAMS":
+                case PropertyLocation.Params:
                     organizationId = httpContext.Request.Params[OrganizationProperty];
                     break;
-                case "FORM":
+                case PropertyLocation.Form:
                     organizationId = httpContext.Request.Form[OrganizationProperty];
                     break;
-                case "SESSION":
+                case PropertyLocation.Session:
                     organizationId = (string) httpContext.Session?[OrganizationProperty];
                     break;
-                case "COOKIE":
+                case PropertyLocation.Cookie:
                     if (string.IsNullOrWhiteSpace(CookieName))
                         throw new ArgumentNullException(nameof(CookieName), "The cookie name must be provided");
                     organizationId = httpContext.Request.Cookies?[CookieName]?.Values?[OrganizationProperty];
                     break;
-                case "QUERY":
+                case PropertyLocation.Query:
                     organizationId = httpContext.Request.QueryString[OrganizationProperty];
                     break;
+                case PropertyLocation.Default:
                 default:
                     organizationId = (string)(httpContext.Request.RequestContext.RouteData.Values[OrganizationProperty] ??
                                               httpContext.Request.Params[OrganizationProperty] ??

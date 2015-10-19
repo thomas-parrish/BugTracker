@@ -3,6 +3,7 @@ using BugTracker.Libraries.Comparers;
 using BugTracker.Models;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
+using OrganizationalIdentity.UserManager;
 
 namespace BugTracker.Migrations
 {
@@ -21,15 +22,16 @@ namespace BugTracker.Migrations
 
         protected override void Seed(BugTracker.Models.ApplicationDbContext context)
         {
-            var userManager = new ApplicationUserManager(new UserStore<ApplicationUser>());
-            var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>());
+            var userManager = new ApplicationUserManager(new OrganizationUserStore<ApplicationUser>(context));
+            var roleManager = new RoleManager<OrganizationRole,string>(new RoleStore<OrganizationRole, string, OrganizationUserRole>(context));
 
-            var roles = new List<IdentityRole>
+            var roles = new List<OrganizationRole>
             {
-                new IdentityRole() {Name = "Submitter"},
-                new IdentityRole() {Name = "Developer"},
-                new IdentityRole() {Name = "Project Manager"},
-                new IdentityRole() {Name = "Admin"}
+                new OrganizationRole() {Name = "Submitter"},
+                new OrganizationRole() {Name = "Developer"},
+                new OrganizationRole() {Name = "Project Manager"},
+                new OrganizationRole() {Name = "Admin"},
+                new OrganizationRole() {Name = "Divine Being"}
             };
 
             foreach(var role in roles.Except(context.Roles, new RoleEqualityComparer()))

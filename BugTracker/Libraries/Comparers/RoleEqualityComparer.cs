@@ -1,16 +1,17 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNet.Identity.EntityFramework;
+using OrganizationalIdentity.UserManager;
 
 namespace BugTracker.Libraries.Comparers
 {
-    class RoleEqualityComparer : IEqualityComparer<IdentityRole>
+    class RoleEqualityComparer : IEqualityComparer<OrganizationRole>
     {
-        public bool Equals(IdentityRole x, IdentityRole y)
+        public bool Equals(OrganizationRole x, OrganizationRole y)
         {
             return x.Name == y.Name;
         }
 
-        public int GetHashCode(IdentityRole obj)
+        public int GetHashCode(OrganizationRole obj)
         {
             unchecked
             {

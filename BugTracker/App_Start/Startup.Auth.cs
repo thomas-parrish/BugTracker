@@ -9,6 +9,7 @@ using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Cookies;
+using OrganizationalIdentity.UserManager;
 using Owin;
 using Owin.Security.Providers.GitHub;
 
@@ -35,41 +36,7 @@ namespace BugTracker
                 {
                     // Enables the application to validate the security stamp when the user logs in.
                     // This is a security feature which is used when you change a password or add an external login to your account.  
-                    OnValidateIdentity = async context =>
-                    {
-                        // invalidate user cookie if user's security stamp have changed
-                        var invalidateBySecurityStamp = SecurityStampValidator.OnValidateIdentity<ApplicationUserManager, ApplicationUser>(
-                                validateInterval: TimeSpan.FromMinutes(30),
-                                regenerateIdentity: (manager, user) => user.GenerateUserIdentityAsync(manager));
-                        await invalidateBySecurityStamp.Invoke(context);
-
-                        if (context.Identity == null || !context.Identity.IsAuthenticated)
-                        {
-                            return;
-                        }
-                        if (HttpRuntime.Cache[context.Identity.Name] != null)
-                        {
-                            // get user manager. It must be registered with OWIN
-                            var userManager = context.OwinContext.GetUserManager<ApplicationUserManager>();
-                            var username = context.Identity.Name;
-
-                            // get new user identity with updated properties
-                            var updatedUser = await userManager.FindByNameAsync(username);
-
-                            // updated identity from the new data in the user object
-                            var newIdentity = await updatedUser.GenerateUserIdentityAsync(userManager);
-
-                            // kill old cookie
-                            context.OwinContext.Authentication.SignOut(context.Options.AuthenticationType);
-
-                            // sign in again
-                            var authenticationProperties = new AuthenticationProperties() { IsPersistent = context.Properties.IsPersistent };
-                            context.OwinContext.Authentication.SignIn(authenticationProperties, newIdentity);
-
-                            context.ReplaceIdentity(newIdentity);
-                            HttpRuntime.Cache.Remove(context.Identity.Name);
-                        }
-                    }
+                    OnValidateIdentity = RegenerateIdentityTrigger<ApplicationUserManager,ApplicationUser>.Validate
                 }
             });            
             app.UseExternalSignInCookie(DefaultAuthenticationTypes.ExternalCookie);

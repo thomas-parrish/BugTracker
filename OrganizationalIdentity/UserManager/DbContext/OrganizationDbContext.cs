@@ -9,13 +9,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity.EntityFramework;
+using OrganizationalIdentity.Interfaces;
 
 namespace OrganizationalIdentity.UserManager
 {
     public class OrganizationDbContext<TUser> :
         IdentityDbContext
             <TUser, OrganizationRole, string, IdentityUserLogin,
-                OrganizationUserRole, IdentityUserClaim> 
+                OrganizationUserRole, IdentityUserClaim>
         where TUser : OrganizationUser
     {
 

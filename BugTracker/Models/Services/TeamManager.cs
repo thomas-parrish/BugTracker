@@ -16,90 +16,90 @@ namespace BugTracker.Models
     {
         private ApplicationUserManager Manager { get; }
 
-        private ApplicationDbContext Context { get; }
+        //private ApplicationDbContext Context { get; }
 
-        public TeamManager(ApplicationUserManager userManager, ApplicationDbContext context)
-        {
-            Manager = userManager;
-            Context = context;
-        }
+        //public TeamManager(ApplicationUserManager userManager, ApplicationDbContext context)
+        //{
+        //    Manager = userManager;
+        //    Context = context;
+        //}
 
-        public bool InviteUserToTeam(int teamId, string invitedById, string email)
-        {
-            using (var crypto = new RNGCryptoServiceProvider())
-            {
-                var tokenData = new byte[8];
-                crypto.GetBytes(tokenData);
-                var key = Convert.ToBase64String(tokenData);
+        //public bool InviteUserToTeam(int teamId, string invitedById, string email)
+        //{
+        //    using (var crypto = new RNGCryptoServiceProvider())
+        //    {
+        //        var tokenData = new byte[8];
+        //        crypto.GetBytes(tokenData);
+        //        var key = Convert.ToBase64String(tokenData);
 
-                Context.TeamInvitations.Add(new TeamInvite()
-                {
-                    Key = key,
-                    Email = email,
-                    InvitedById = invitedById,
-                    TeamId = teamId
-                });
-                Context.SaveChanges();
+        //        Context.TeamInvitations.Add(new TeamInvite()
+        //        {
+        //            Key = key,
+        //            Email = email,
+        //            InvitedById = invitedById,
+        //            TeamId = teamId
+        //        });
+        //        Context.SaveChanges();
 
-                //Publish notification to signalR
-                //Send Email to user
-                return true;
-            }
-            return false;
-        }
+        //        //Publish notification to signalR
+        //        //Send Email to user
+        //        return true;
+        //    }
+        //    return false;
+        //}
 
-        public bool AcceptTeamInvite(int teamId, string email, string key)
-        {
-            var invite = Context.TeamInvitations.FirstOrDefault(
-                t => t.TeamId == teamId && t.Key == key && t.Email == email);
-            var user = Manager.FindByEmail(email);
-            var team = Context.Teams.Find(teamId);
+        //public bool AcceptTeamInvite(int teamId, string email, string key)
+        //{
+        //    var invite = Context.TeamInvitations.FirstOrDefault(
+        //        t => t.TeamId == teamId && t.Key == key && t.Email == email);
+        //    var user = Manager.FindByEmail(email);
+        //    var team = Context.Teams.Find(teamId);
 
-            if (invite == null || user == null || team == null)
-                return false;
+        //    if (invite == null || user == null || team == null)
+        //        return false;
 
-            team.Members.Add(user);
+        //    team.Members.Add(user);
 
-            Manager.AddClaim(user.Id, new Claim("Team", teamId.ToString()));
+        //    Manager.AddClaim(user.Id, new Claim("Team", teamId.ToString()));
 
-            return true;
-        }
+        //    return true;
+        //}
 
-        public bool AddTeamRoleToUser(string userId, string role, int teamId)
-        {
-            try
-            {
-                var dbRole = Context.Roles.FirstOrDefault(r => r.Name == role);
-                if (dbRole == null)
-                    return false;
+        //public bool AddTeamRoleToUser(string userId, string role, int teamId)
+        //{
+        //    try
+        //    {
+        //        var dbRole = Context.Roles.FirstOrDefault(r => r.Name == role);
+        //        if (dbRole == null)
+        //            return false;
 
-                Context.UserTeamRoles.Add(new UserTeamRole()
-                {
-                    UserId = userId,
-                    TeamId = teamId,
-                    RoleId = dbRole.Id
-                });
+        //        Context.UserTeamRoles.Add(new UserTeamRole()
+        //        {
+        //            UserId = userId,
+        //            TeamId = teamId,
+        //            RoleId = dbRole.Id
+        //        });
 
-                Context.SaveChanges();
-            }
-            catch (DbException e)
-            {
-                var ex = e.GetBaseException() as SqlException;
-                //It's not SQL exception, or it's not an update key or unique constraint error
-                if (ex == null || (ex.Number != 2601 && ex.Number != 123))
-                {
-                    throw;
-                }
-                return false;
-            }
-            //Add User Claim to team role
-            return true;
-        }
+        //        Context.SaveChanges();
+        //    }
+        //    catch (DbException e)
+        //    {
+        //        var ex = e.GetBaseException() as SqlException;
+        //        //It's not SQL exception, or it's not an update key or unique constraint error
+        //        if (ex == null || (ex.Number != 2601 && ex.Number != 123))
+        //        {
+        //            throw;
+        //        }
+        //        return false;
+        //    }
+        //    //Add User Claim to team role
+        //    return true;
+        //}
 
-        public bool RemoveTeamRoleFromUser(string userId, string role, int teamId)
-        {
-            return true;
-        }
+        //public bool RemoveTeamRoleFromUser(string userId, string role, int teamId)
+        //{
+        //    return true;
+        //}
 
     }
 }

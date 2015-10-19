@@ -19,15 +19,15 @@ namespace BugTracker.Libraries.Helpers
             };
         }
 
-        public async Task<List<Models.Team>> GetRemoteTeams()
-        {
-            var teams = (await Client.Organization.GetAllForCurrent())
-                .Select(t => new Models.Team()
-                {
-                    Name = t.Name ?? t.Login,
-                    GitHubId = t.Id
-                });
-            return teams.ToList();
-        }
+        //public async Task<List<Models.Team>> GetRemoteTeams()
+        //{
+        //    var teams = (await Client.Organization.GetAllForCurrent())
+        //        .Select(t => new Models.Team()
+        //        {
+        //            Name = t.Name ?? t.Login,
+        //            GitHubId = t.Id
+        //        });
+        //    return teams.ToList();
+        //}
     }
 }
